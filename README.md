@@ -18,6 +18,8 @@ WS to control the shoot direction up and down
 
 ZX to control the shoot strength increase and decrease
 
+C (Click) to shoot
+
 IJKL to choose the arm in the armory
 
 Arrow Keys to control the main camera move
