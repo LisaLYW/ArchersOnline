@@ -16,7 +16,13 @@ Arrow.eAssets = Object.freeze({
     eShockWaveTexture: "./assets/arrows/arrows_d.png",
     eScreamingChickenArrowLeftTexture: "./assets/arrows/screamingChickenLeft.png",
     eScreamingChickenArrowRightTexture: "./assets/arrows/screamingChickenRight.png",
-    eMineLauncherTexture: "./assets/arrows/arrows_a.png"
+    eMineLauncherTexture: "./assets/arrows/arrows_a.png",
+    ePoisonArrowTexture: "./assets/arrows/arrows_b.png",
+    eRegenerationArrowTexture: "./assets/arrows/regenerationArrow.png"
+});
+
+Arrow.eAudio = Object.freeze({
+    eChickenScreaming : "assets/sounds/chicken.mp3"
 });
 
 function Arrow(
@@ -57,7 +63,7 @@ function Arrow(
     this.getRigidBody().setMass(0.1);
 
     this.mEffectTimer = 0;
-    this.mEffectTimeLimit = 30;
+    this.mEffectTimeLimit = 120;
     this.mEffectObj = [];
 
     //this.toggleDrawRigidShape(); // Draw RigidShape
@@ -69,7 +75,9 @@ Arrow.prototype.update = function () {
 
     if (this.mCurrentState === Arrow.eArrowState.eHit) {
         this.mEffectTimer++;
-        if (this.mEffectTimer === this.mEffectTimeLimit && this.isEffectEnd()) {
+        console.log(this.isEffectEnd());
+        console.log(this.mEffectTimer);
+        if (this.mEffectTimer >= this.mEffectTimeLimit && this.isEffectEnd()) {
             this.mAllObjs.removeFromSet(this);
             this.mCurrentState = Arrow.eArrowState.eEffect;
         }
@@ -132,31 +140,7 @@ Arrow.prototype.update = function () {
             break;
         }
     }
-    /*
-    if (this.getRigidBody().collisionTest(this.mMaster.getRigidBody(), collisionInfo)) {
-        this.mAllObjs.removeFromSet(this);
-        this.mCurrentState = Arrow.eArrowState.eMiss;
-    }
-    */
-    /*
-    var spaceLimit = this.mMaster.getSpaceLimit();
-    if (this.getXform().getYPos() > spaceLimit.upLimit) {
-        this.mAllObjs.removeFromSet(this);
-        this.mCurrentState = Arrow.eArrowState.eMiss;
-    }
-    if (this.getXform().getYPos() < spaceLimit.downLimit) {
-        this.mAllObjs.removeFromSet(this);
-        this.mCurrentState = Arrow.eArrowState.eMiss;
-    }
-    if (this.getXform().getXPos() < spaceLimit.leftLimit) {
-        this.mAllObjs.removeFromSet(this);
-        this.mCurrentState = Arrow.eArrowState.eMiss;
-    }
-    if (this.getXform().getXPos() > spaceLimit.rightLimit) {
-        this.mAllObjs.removeFromSet(this);
-        this.mCurrentState = Arrow.eArrowState.eMiss;
-    }
-    */
+
     if (this.getXform().getYPos() > 250) {
         this.mAllObjs.removeFromSet(this);
         this.mCurrentState = Arrow.eArrowState.eMiss;
@@ -195,7 +179,7 @@ Arrow.prototype.effectOnObstacle = function (obj) {
 
 Arrow.prototype.effectOnArcher = function (obj) {
     this.mAllObjs.removeFromSet(this);
-    obj.loseHp(1);
+    obj.loseHp(2);
     this.mCurrentState = Arrow.eArrowState.eHit;
 };
 
@@ -203,12 +187,17 @@ Arrow.prototype.effectOnDestroyable = function (obj) {
     this.mAllObjs.removeFromSet(this);
     if (obj instanceof LifePotion) {
         this.mMaster.getArcher().addHp(1);
+        this.mAllObjs.removeFromSet(obj);
+        this.mDestroyable.removeFromSet(obj);
     }
     else if (obj instanceof Bow) {
         this.mMaster.getMoreArm(obj.getArmNum(), obj.getArmAmount());
+        this.mAllObjs.removeFromSet(obj);
+        this.mDestroyable.removeFromSet(obj);
     }
-    this.mAllObjs.removeFromSet(obj);
-    this.mDestroyable.removeFromSet(obj);
+    else if (obj instanceof Mine) {
+        obj.explode();
+    }
     this.mCurrentState = Arrow.eArrowState.eHit;
 };
 
@@ -220,4 +209,36 @@ Arrow.prototype.isEffectEnd = function () {
             return false;
     }
     return true;
+};
+
+Arrow.loadAssets = function () {
+    gEngine.Textures.loadTexture(Arrow.eAssets.eNormalArrowTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.ePaperPlaneTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.eBouncingArrowTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.eDestroyerTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.ePuncturingArrowTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.eShockWaveTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.eScreamingChickenArrowLeftTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.eScreamingChickenArrowRightTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.eMineLauncherTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.ePoisonArrowTexture);
+    gEngine.Textures.loadTexture(Arrow.eAssets.eRegenerationArrowTexture);
+
+    gEngine.AudioClips.loadAudio(Arrow.eAudio.eChickenScreaming);
+};
+
+Arrow.unloadAssets = function () {
+    gEngine.Textures.unloadTexture(Arrow.eAssets.eNormalArrowTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.ePaperPlaneTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.eBouncingArrowTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.eDestroyerTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.ePuncturingArrowTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.eShockWaveTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.eScreamingChickenArrowLeftTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.eScreamingChickenArrowRightTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.eMineLauncherTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.ePoisonArrowTexture);
+    gEngine.Textures.unloadTexture(Arrow.eAssets.eRegenerationArrowTexture);
+
+    gEngine.AudioClips.unloadAudio(Arrow.eAudio.eChickenScreaming);
 };

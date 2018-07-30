@@ -40,8 +40,8 @@ MineLauncher.prototype.draw = function (aCamera) {
 
 MineLauncher.prototype.createParticle = function (atX, atY) {
     var life = 30 + Math.random() * 200;
-    var p = new ParticleGameObject("assets/particles/Particle2.png", atX, atY, life);
-    p.getRenderable().setColor([1, 0, 0, 1]);
+    var p = new ParticleGameObject(ParticleSystem.eAssets.eBoom, atX, atY, life);
+    p.getRenderable().setColor([1, 1, 1, 0.5]);
 
     // size of the particle
     var r = 3.5 + Math.random() * 2.5;
@@ -68,7 +68,6 @@ MineLauncher.prototype.effectOnObstacle = function (obj) {
     this.mAllObjs.removeFromSet(this);
 
     this.plantMine();
-
     this.mGenerateParticles = 0;
     this.mCurrentState = Arrow.eArrowState.eHit;
 };
@@ -95,21 +94,30 @@ MineLauncher.prototype.effectOnDestroyable = function (obj) {
         this.mAllObjs.removeFromSet(obj);
         this.mDestroyable.removeFromSet(obj);
     }
-    else if (obj instanceof Mine){
-        
-    }
     this.plantMine();
 
     this.mGenerateParticles = 0;
     this.mCurrentState = Arrow.eArrowState.eHit;
 };
 
-MineLauncher.prototype.plantMine = function () {
+MineLauncher.prototype.plantMine = function (damage) {
     var mine;
     var XPos = this.getXform().getXPos();
     var YPos = this.getXform().getYPos() + 10;
     mine = new Mine(
-        XPos, YPos, Mine.eAssets.eMineTexture, 1,
+        XPos - 10, YPos, Mine.eAssets.eMineTexture, 2,
+        this.mAllObjs, this.mObstacle, this.mDestroyable);
+    this.mAllObjs.addToSet(mine);
+    this.mDestroyable.addToSet(mine);
+
+    mine = new Mine(
+        XPos, YPos, Mine.eAssets.eMineTexture, 3,
+        this.mAllObjs, this.mObstacle, this.mDestroyable);
+    this.mAllObjs.addToSet(mine);
+    this.mDestroyable.addToSet(mine);
+
+    mine = new Mine(
+        XPos + 10, YPos, Mine.eAssets.eMineTexture, 2,
         this.mAllObjs, this.mObstacle, this.mDestroyable);
     this.mAllObjs.addToSet(mine);
     this.mDestroyable.addToSet(mine);

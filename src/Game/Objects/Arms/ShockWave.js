@@ -10,7 +10,7 @@ function ShockWave(
         master
     );
 
-    this.mEffectTimeLimit = 180;
+    this.mEffectTimeLimit = 120;
 
     this.mGenerateParticles = 1;
     this.mParticles = new ParticleGameObjectSet();
@@ -37,7 +37,7 @@ ShockWave.prototype.draw = function (aCamera) {
 
 ShockWave.prototype.createParticle = function (atX, atY) {
     var life = 30 + Math.random() * 200;
-    var p = new ParticleGameObject("assets/particles/Particle2.png", atX, atY, life);
+    var p = new ParticleGameObject(ParticleSystem.eAssets.eSnow, atX, atY, life);
     p.getRenderable().setColor([0.898, 0.898, 0.976, 1]);
 
     // size of the particle
@@ -63,14 +63,15 @@ ShockWave.prototype.createParticle = function (atX, atY) {
 
 ShockWave.prototype.effectOnObstacle = function (obj) {
     this.mAllObjs.removeFromSet(this);
+    var i;
     for (i = 0; i < this.mObstacle.size(); i++) {
         obj = this.mObstacle.getObjectAt(i);
         if (obj instanceof Archer) {
             var distance = this.calculateDistance(obj.getXform().getXPos(), obj.getXform().getYPos());
             if (distance <= 60) {
-                var xSpeed = 15 + (60 - distance) * (obj.getXform().getXPos() - this.getXform().getXPos()) / distance;
-                var ySpeed = 30 + (60 - distance) * (obj.getXform().getYPos() - this.getXform().getYPos()) / distance;
-                obj.getRigidBody().setVelocity(xSpeed, ySpeed);
+                var vx = 5 + (80 - distance) * (obj.getXform().getXPos() - this.getXform().getXPos()) / distance;
+                var vy = 15 + (80 - distance) * (obj.getXform().getYPos() - this.getXform().getYPos()) / distance;
+                obj.getRigidBody().setVelocity(vx, vy);
             }
         }
     }
@@ -82,19 +83,43 @@ ShockWave.prototype.effectOnArcher = function (obj) {
     this.mAllObjs.removeFromSet(this);
     obj.loseHp(2);
     if (this.getXform().getXPos() < obj.getXform().getXPos())
-        obj.getRigidBody().setVelocity(20, 30);
+        obj.getRigidBody().setVelocity(40, 60);
     else
-        obj.getRigidBody().setVelocity(-20, 30);
+        obj.getRigidBody().setVelocity(-40, 60);
     this.mGenerateParticles = 0;
     this.mCurrentState = Arrow.eArrowState.eHit;
+};
 
-    //
-//    var buff = new Buff(Arrow.eAssets.eShockWaveTexture);
-//    obj.mPlayer.addBuff(buff);
+ShockWave.prototype.effectOnDestroyable = function (obj) {
+    this.mAllObjs.removeFromSet(this);
+
+    if (this.getXform().getXPos() < obj.getXform().getXPos())
+        obj.getRigidBody().setVelocity(40, 60);
+    else
+        obj.getRigidBody().setVelocity(-40, 60);
+
+    if (obj instanceof LifePotion) {
+        this.mMaster.getArcher().addHp(1);
+        this.mAllObjs.removeFromSet(obj);
+        this.mDestroyable.removeFromSet(obj);
+    }
+    else if (obj instanceof Bow) {
+        this.mMaster.getMoreArm(obj.getArmNum(), obj.getArmAmount());
+        this.mAllObjs.removeFromSet(obj);
+        this.mDestroyable.removeFromSet(obj);
+    }
+    else if (obj instanceof Mine) {
+        obj.explode();
+    }
+
+    this.mGenerateParticles = 0;
+    this.mCurrentState = Arrow.eArrowState.eHit;
 };
 
 
 ShockWave.prototype.calculateDistance = function (posX, posY) {
-    return Math.sqrt(Math.pow(this.getXform().getXPos() - posX, 2)
-        + Math.pow(this.getXform().getYPos() - posY, 2));
+    return Math.sqrt(
+        Math.pow(this.getXform().getXPos() - posX, 2) +
+        Math.pow(this.getXform().getYPos() - posY, 2)
+    );
 };

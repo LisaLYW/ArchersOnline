@@ -32,17 +32,17 @@ Game.prototype.setCurrentPlayer = function (index) {
     this.mPlayers[0].incTurns();
     this.mPlayers[1].incTurns();
     if (this.mTurns % 2 === 0) {
-        this.decreaseSpaceLimit(10);
-        console.log(this.mTurns);
-        console.log(this.mSpaceLimit);
+        this.decreaseSpaceLimit(5);
     }
     this.mCurrentPlayer = this.mPlayers[index];
     this.mCurrentPlayer.setState(Player.ePlayerState.eReady);
     this.mCurrentPlayer.resetTimer();
-    this.mCurrentPlayer.resetCamera();
+    for (i = 0; i < 5; i++)
+        this.mCurrentPlayer.resetCamera();
 
     var i;
     if (index === 0) {
+        console.log(this.mCurrentScene.mAllObjs);
         this.mPlayers[1].setState(Player.ePlayerState.eWait);
         this.mCurrentState = Game.eGameState.ePlayer1_Turn;
     }
@@ -108,6 +108,30 @@ Game.prototype.update = function () {
             switch (this.mCurrentPlayer.getCurrentState()) {
                 case Player.ePlayerState.eWait: {
                     this.setCurrentPlayer(1);
+
+                    if (this.mCurrentScene.mProps.size() < 12) {
+                        var xpos = Math.floor(Game.random(0, 480)) - 240;
+                        var ypos = Math.floor(Game.random(40, 200));
+                        var propRand = Math.floor(Game.random(0, 5));
+                        if (propRand < 2) {
+                            var newLifePotion = LifePotion.randomLifePotion(
+                                xpos, ypos,
+                                this.mCurrentScene.mAllObjs,
+                                this.mCurrentScene.mAllObstacles,
+                                this.mCurrentScene.mDestroyable
+                            );
+                            this.mCurrentScene.mAllObjs.addToSet(newLifePotion);
+                            this.mCurrentScene.mDestroyable.addToSet(newLifePotion);
+                            this.mCurrentScene.mProps.addToSet(newLifePotion);
+                        }
+                        else if (propRand >= 2 && propRand < 5) {
+                            var newBow = Bow.randomBow(xpos, ypos);
+                            this.mCurrentScene.mAllObjs.addToSet(newBow);
+                            this.mCurrentScene.mDestroyable.addToSet(newBow);
+                            this.mCurrentScene.mProps.addToSet(newBow);
+                        }
+                    }
+
                     break;
                 }
                 case Player.ePlayerState.eDie: {
@@ -126,6 +150,43 @@ Game.prototype.update = function () {
             switch (this.mCurrentPlayer.getCurrentState()) {
                 case Player.ePlayerState.eWait: {
                     this.setCurrentPlayer(0);
+
+                    if (this.mCurrentScene.mProps.size() < 12) {
+                        var xpos = Math.floor(Game.random(-240, 240));
+                        var ypos = Math.floor(Game.random(40, 200));
+                        var propRand = Math.floor(Game.random(0, 5));
+                        if (propRand < 2) {
+                            var newLifePotion = LifePotion.randomLifePotion(
+                                xpos, ypos,
+                                this.mCurrentScene.mAllObjs,
+                                this.mCurrentScene.mAllObstacles,
+                                this.mCurrentScene.mDestroyable
+                            );
+                            this.mCurrentScene.mAllObjs.addToSet(newLifePotion);
+                            this.mCurrentScene.mDestroyable.addToSet(newLifePotion);
+                            this.mCurrentScene.mProps.addToSet(newLifePotion);
+                            newLifePotion = LifePotion.randomLifePotion(
+                                -xpos, ypos,
+                                this.mCurrentScene.mAllObjs,
+                                this.mCurrentScene.mAllObstacles,
+                                this.mCurrentScene.mDestroyable
+                            );
+                            this.mCurrentScene.mAllObjs.addToSet(newLifePotion);
+                            this.mCurrentScene.mDestroyable.addToSet(newLifePotion);
+                            this.mCurrentScene.mProps.addToSet(newLifePotion);
+                        }
+                        else if (propRand >= 2 && propRand < 5) {
+                            var newBow = Bow.randomBow(xpos, ypos);
+                            this.mCurrentScene.mAllObjs.addToSet(newBow);
+                            this.mCurrentScene.mDestroyable.addToSet(newBow);
+                            this.mCurrentScene.mProps.addToSet(newBow);
+                            newBow = Bow.randomBow(-xpos, ypos);
+                            this.mCurrentScene.mAllObjs.addToSet(newBow);
+                            this.mCurrentScene.mDestroyable.addToSet(newBow);
+                            this.mCurrentScene.mProps.addToSet(newBow);
+                        }
+                    }
+
                     break;
                 }
                 case Player.ePlayerState.eDie: {
@@ -155,12 +216,13 @@ Game.prototype.update = function () {
     }
 };
 
-Game.prototype.keyControl = function () {
-
-};
-
 Game.prototype.decreaseSpaceLimit = function (delta) {
     this.mSpaceLimit.upLimit -= 2 * delta;
     this.mSpaceLimit.leftLimit += delta;
     this.mSpaceLimit.rightLimit -= delta;
+};
+
+Game.random = function (min, max) {
+    parseInt(Math.random() * (max - min + 1) + min, 10);
+    return Math.floor(Math.random() * (max - min + 1) + min);
 };

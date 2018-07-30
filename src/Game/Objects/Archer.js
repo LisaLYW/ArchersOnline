@@ -1,18 +1,21 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 "use strict";
 
-Archer.eAssets = Object.freeze({
-    eStandLeftTexture: "assets/archerNew/stand_left.png",
-    eStandRightTexture: "assets/archerNew/stand_right.png",
-    eWalkLeftTexture: "assets/archerNew/walk_left.png",
-    eWalkRightTexture: "assets/archerNew/walk_right.png",
-    eShootLeftTexture: "assets/archerNew/shoot_left.png",
-    eShootRightTexture: "assets/archerNew/shoot_right.png"
+Archer.eAssets_1 = Object.freeze({
+    eStandLeftTexture: "assets/archerNew/stand_left1.png",
+    eStandRightTexture: "assets/archerNew/stand_right1.png",
+    eWalkLeftTexture: "assets/archerNew/walk_left1.png",
+    eWalkRightTexture: "assets/archerNew/walk_right1.png",
+    eShootLeftTexture: "assets/archerNew/shoot_left1.png",
+    eShootRightTexture: "assets/archerNew/shoot_right1.png"
+});
+
+Archer.eAssets_2 = Object.freeze({
+    eStandLeftTexture: "assets/archerNew/stand_left2.png",
+    eStandRightTexture: "assets/archerNew/stand_right2.png",
+    eWalkLeftTexture: "assets/archerNew/walk_left2.png",
+    eWalkRightTexture: "assets/archerNew/walk_right2.png",
+    eShootLeftTexture: "assets/archerNew/shoot_left2.png",
+    eShootRightTexture: "assets/archerNew/shoot_right2.png"
 });
 
 Archer.eArcherState = Object.freeze({
@@ -32,37 +35,44 @@ Archer.eDirection = Object.freeze({
 function Archer(
     atX, atY, atW, atH,
     aAllObjs, aObstacle, aDestroyable,
-    player
+    player, index
 ) {
     this.mPlayer = player;
     this.mHp = 10;
 
     // for jump and double jump
     this.mJumpRemain = 2;
-    this.mTimeCount = 0;
-    this.mCoolDownCount = 0;
-    this.mJumpCoolDown = new Array(2);
 
     this.mAllObjs = aAllObjs;
     this.mObstacle = aObstacle;
     this.mDestroyable = aDestroyable;
 
+    this.mIndex = index;
     // Animation Members
-    this.mStandLeft = new SpriteRenderable(Archer.eAssets.eStandLeftTexture);
+    if(!this.mIndex)
+        this.mStandLeft = new SpriteRenderable(Archer.eAssets_1.eStandLeftTexture);
+    else
+        this.mStandLeft = new SpriteRenderable(Archer.eAssets_2.eStandLeftTexture);
     this.mStandLeft.setColor([1, 1, 1, 0]);
     this.mStandLeft.getXform().setPosition(atX, atY);
     this.mStandLeft.getXform().setSize(atW, atH);
     this.mStandLeft.setElementPixelPositions(0, 80, 48, 128);
 
-    this.mWalkLeft = new SpriteAnimateRenderable(Archer.eAssets.eWalkLeftTexture);
+    if(!this.mIndex)
+        this.mWalkLeft = new SpriteAnimateRenderable(Archer.eAssets_1.eWalkLeftTexture);
+    else
+        this.mWalkLeft = new SpriteAnimateRenderable(Archer.eAssets_2.eWalkLeftTexture);
     this.mWalkLeft.setColor([1, 1, 1, 0]);
     this.mWalkLeft.getXform().setPosition(atX, atY);
     this.mWalkLeft.getXform().setSize(atW, atH);
     this.mWalkLeft.setSpriteSequence(128, 0, 80, 80, 7, 0);
     this.mWalkLeft.setAnimationType(SpriteAnimateRenderable.eAnimationType.eAnimateRight);
     this.mWalkLeft.setAnimationSpeed(10);
-
-    this.mShootLeft = new SpriteAnimateRenderable(Archer.eAssets.eShootLeftTexture);
+    
+    if(!this.mIndex)
+        this.mShootLeft = new SpriteAnimateRenderable(Archer.eAssets_1.eShootLeftTexture);
+    else
+        this.mShootLeft = new SpriteAnimateRenderable(Archer.eAssets_2.eShootLeftTexture);
     this.mShootLeft.setColor([1, 1, 1, 0]);
     this.mShootLeft.getXform().setPosition(atX, atY);
     this.mShootLeft.getXform().setSize(atW, atH);
@@ -71,13 +81,19 @@ function Archer(
     this.mShootLeft.setAnimationSpeed(30);
 
     // Animation Members
-    this.mStandRight = new SpriteRenderable(Archer.eAssets.eStandRightTexture);
+    if(!this.mIndex)
+        this.mStandRight = new SpriteRenderable(Archer.eAssets_1.eStandRightTexture);
+    else
+        this.mStandRight = new SpriteRenderable(Archer.eAssets_2.eStandRightTexture);
     this.mStandRight.setColor([1, 1, 1, 0]);
     this.mStandRight.getXform().setPosition(atX, atY);
     this.mStandRight.getXform().setSize(atW, atH);
     this.mStandRight.setElementPixelPositions(48, 128, 48, 128);
-
-    this.mWalkRight = new SpriteAnimateRenderable(Archer.eAssets.eWalkRightTexture);
+    
+    if(!this.mIndex)
+        this.mWalkRight = new SpriteAnimateRenderable(Archer.eAssets_1.eWalkRightTexture);
+    else
+        this.mWalkRight = new SpriteAnimateRenderable(Archer.eAssets_2.eWalkRightTexture);
     this.mWalkRight.setColor([1, 1, 1, 0]);
     this.mWalkRight.getXform().setPosition(atX, atY);
     this.mWalkRight.getXform().setSize(atW, atH);
@@ -85,7 +101,10 @@ function Archer(
     this.mWalkRight.setAnimationType(SpriteAnimateRenderable.eAnimationType.eAnimateLeft);
     this.mWalkRight.setAnimationSpeed(10);
 
-    this.mShootRight = new SpriteAnimateRenderable(Archer.eAssets.eShootRightTexture);
+    if(!this.mIndex)
+        this.mShootRight = new SpriteAnimateRenderable(Archer.eAssets_1.eShootRightTexture);
+    else
+        this.mShootRight = new SpriteAnimateRenderable(Archer.eAssets_2.eShootRightTexture);
     this.mShootRight.setColor([1, 1, 1, 0]);
     this.mShootRight.getXform().setPosition(atX, atY);
     this.mShootRight.getXform().setSize(atW, atH);
@@ -111,6 +130,7 @@ function Archer(
 gEngine.Core.inheritPrototype(Archer, GameObject);
 
 Archer.prototype.update = function (aCamera) {
+    console.log(this.getCurrentState());
     GameObject.prototype.update.call(this);
 
     var xform = this.getRenderable().getXform();
@@ -133,16 +153,26 @@ Archer.prototype.update = function (aCamera) {
     this.mWalkRight.updateAnimation();
     this.mShootRight.updateAnimation();
 
+    var i;
+
     // for jump and double jump
-    this.mTimeCount++;
-    if (this.mTimeCount === this.mJumpCoolDown[0]) {
-        this.mJumpRemain++;
-    }
-    if (this.mTimeCount === this.mJumpCoolDown[1]) {
-        this.mJumpRemain++;
+    var v = this.getRigidBody().getVelocity();
+    if (this.mJumpRemain < 2 && Math.abs(v[0]) <= 0.1 && Math.abs(v[1]) <= 0.84) {
+        var pos = this.getXform().getPosition();
+        var size = this.getXform().getSize();
+
+        for (i = 0; i < this.mAllObjs.size(); i++) {
+            var objPos = this.mAllObjs.getObjectAt(i).getXform().getPosition();
+            var objSize = this.mAllObjs.getObjectAt(i).getXform().getSize();
+            if (pos[1] - objPos[1] <= 6.4 &&
+                pos[1] - objPos[1] >= 6.2 &&
+                pos[0] - objPos[0] <= (size[0] + objSize[0]) / 2 + 1.0 &&
+                pos[0] - objPos[0] >= -(size[0] + objSize[0]) / 2 - 1.0) {
+                this.mJumpRemain = 2;
+            }
+        }
     }
 
-    var i;
     var obj;
     var collisionInfo;
     for (i = 0; i < this.mDestroyable.size(); i++) {
@@ -334,14 +364,51 @@ Archer.prototype.jump = function () {
     if (this.mJumpRemain > 0) {
         var velocity = this.getRigidBody().getVelocity();
         this.getRigidBody().setVelocity(velocity[0], 40);
-        this.mJumpCoolDown[this.mCoolDownCount] = 195 + this.mTimeCount;
-        this.mCoolDownCount++;
-        if (this.mCoolDownCount > 1)
-            this.mCoolDownCount = 0;
         this.mJumpRemain--;
     }
 };
 
 Archer.prototype.getMoreArm = function (armNum, armAmount) {
     this.mPlayer.getMoreArm(armNum, armAmount);
+};
+
+Archer.prototype.getCurrentState = function () {
+    return this.eCurrentState;
+};
+
+Archer.prototype.setCurrentState = function (state) {
+    this.eCurrentState = state;
+};
+
+
+Archer.loadAssets = function () {
+    gEngine.Textures.loadTexture(Archer.eAssets_1.eStandRightTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_1.eWalkRightTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_1.eShootRightTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_1.eStandLeftTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_1.eWalkLeftTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_1.eShootLeftTexture);
+
+    gEngine.Textures.loadTexture(Archer.eAssets_2.eStandRightTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_2.eWalkRightTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_2.eShootRightTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_2.eStandLeftTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_2.eWalkLeftTexture);
+    gEngine.Textures.loadTexture(Archer.eAssets_2.eShootLeftTexture);
+};
+
+Archer.unloadAssets = function () {
+    gEngine.Textures.unloadTexture(Archer.eAssets_1.eStandRightTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_1.eWalkRightTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_1.eShootRightTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_1.eStandLeftTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_1.eWalkLeftTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_1.eShootLeftTexture);
+
+    gEngine.Textures.unloadTexture(Archer.eAssets_2.eStandRightTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_2.eWalkRightTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_2.eShootRightTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_2.eStandLeftTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_2.eWalkLeftTexture);
+    gEngine.Textures.unloadTexture(Archer.eAssets_2.eShootLeftTexture);
 };

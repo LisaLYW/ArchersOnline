@@ -17,7 +17,7 @@ function PuncturingArrow(
     this.mVy = vY;
 
     this.mHitSet = new GameObjectSet();
-    this.mDamage = 5;
+    this.mDamage = 4;
 
     //particles
     this.mGenerateParticles = 1;
@@ -30,7 +30,6 @@ gEngine.Core.inheritPrototype(PuncturingArrow, Arrow);
 PuncturingArrow.prototype.update = function () {
     Arrow.prototype.update.call(this);
 
-//    console.log(this);
     this.getRigidBody().setVelocity(this.mVx, this.mVy);
 
     if (this.mGenerateParticles === 1) {
@@ -47,7 +46,7 @@ PuncturingArrow.prototype.draw = function (aCamera) {
 
 PuncturingArrow.prototype.createParticle = function (atX, atY) {
     var life = 30 + Math.random() * 200;
-    var p = new ParticleGameObject("assets/particles/Particle2.png", atX, atY, life);
+    var p = new ParticleGameObject(ParticleSystem.eAssets.eSnow, atX, atY, life);
 
     p.getRenderable().setColor([1, 1, 1, 1]);
 
@@ -75,7 +74,8 @@ PuncturingArrow.prototype.createParticle = function (atX, atY) {
 PuncturingArrow.prototype.effectOnObstacle = function (obj) {
     if (!this.mHitSet.hasObject(obj)) {
         this.mHitSet.addToSet(obj);
-        this.mDamage--;
+        if (this.mDamage >= 2)
+            this.mDamage--;
     }
 };
 
@@ -83,19 +83,30 @@ PuncturingArrow.prototype.effectOnArcher = function (obj) {
     if (obj === this.mMaster) {
         this.mMaster.loseHp(1);
     }
-    else {
+    else if (!this.mHitSet.hasObject(obj)) {
         obj.loseHp(this.mDamage);
+        this.mHitSet.addToSet(obj);
     }
-    this.mCurrentState = Arrow.eArrowState.eHit;
 };
 
 PuncturingArrow.prototype.effectOnDestroyable = function (obj) {
     if (obj instanceof LifePotion) {
         this.mMaster.getArcher().addHp(1);
+        this.mAllObjs.removeFromSet(obj);
+        this.mDestroyable.removeFromSet(obj);
     }
     else if (obj instanceof Bow) {
         this.mMaster.getMoreArm(obj.getArmNum(), obj.getArmAmount());
+        this.mAllObjs.removeFromSet(obj);
+        this.mDestroyable.removeFromSet(obj);
     }
-    this.mAllObjs.removeFromSet(obj);
-    this.mDestroyable.removeFromSet(obj);
+    else if (obj instanceof Mine) {
+        obj.explode();
+    }
+
+    if (!this.mHitSet.hasObject(obj)) {
+        this.mHitSet.addToSet(obj);
+        if (this.mDamage >= 2)
+            this.mDamage--;
+    }
 };

@@ -12,19 +12,21 @@ If some one fall down or be pushed out of the map, he will die immediately. And 
 
 AD to control the archer move left or right
 
-Space to control the archer to jump, two two-segment jump is allowed but it has a cooling time
+Space to control the archer to jump, two two-segment jump is allowed
 
-WS to control the shoot direction up and down
+WS or Mouse Click to control the shoot direction up and down
 
 ZX to control the shoot strength increase and decrease
 
 C (Click) to shoot
 
-IJKL to choose the arm in the armory
+IJKL or Mouse Click to choose the arm in the armory
 
 Arrow Keys to control the main camera move
 
 H (Press) to make the main camera return to the archer
+
+Mouse Click on mini map to control the camera move to specific position
 
 ## Arms ##
 
@@ -36,6 +38,8 @@ H (Press) to make the main camera return to the archer
 5. Shock Wave 冲击波
 6. Screaming Chicken 尖叫鸡
 7. Mine Launcher 地雷发射器
+8. Poison Arrow 毒箭
+9. Regeneration Arrow 治疗箭
 
 ## Feedback ##
 

@@ -41,8 +41,15 @@ GameOver1.prototype.unloadScene = function () {
     gEngine.Textures.unloadTexture(this.kQuit);
     gEngine.Textures.unloadTexture(this.kBackground);
     gEngine.Textures.unloadTexture(this.kP1Win);
-    if(this.mOption === 0)
-        this.mNext = new SceneA(this.mGame, Background.ePlace.eOutskirts, Background.eSky.eCloudy);
+    if (this.mOption === 0) {
+        var skyRandom = Math.floor(Game.random(0, 1.8));
+        var placeRandom = Math.floor(Game.random(0, 2.8));
+
+        var nextLevel = new SceneA(this.mGame, placeRandom, skyRandom);
+        console.log(nextLevel);
+        gEngine.Core.startScene(nextLevel);
+        this.mGame.mCurrentScene = nextLevel;
+    }
     else
         this.mNext = new MyMenu(this.mGame);
     gEngine.Core.startScene(this.mNext);

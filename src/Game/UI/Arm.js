@@ -3,10 +3,12 @@ Arm.eMsgString = Object.freeze([
     "PaperPlane :",
     "Bounce :",
     "Destroyer :",
-    "PuncturingArrow :",
+    "Puncturing :",
     "ShockWave :",
     "ScreamingChick :",
-    "MineLauncher :"
+    "MineLauncher :",
+    "PoisonArrow :",
+    "Regeneration :"
 ]);
 
 Arm.eArmNum = Object.freeze({
@@ -17,18 +19,22 @@ Arm.eArmNum = Object.freeze({
     ePuncturingArrow: 4,
     eShockWave: 5,
     eScreamingChickenArrow: 6,
-    eMineLauncher: 7
+    eMineLauncher: 7,
+    ePoisonArrow: 8,
+    eRegenerationArrow: 8
 });
 
 Arm.eIconAssets = Object.freeze({
-    eNormalArrow: "assets/arrows/arrows_f.png",
+    eNormalArrow: "assets/armIcons/normalArrowIcon.png",
     ePaperPlane: "assets/armIcons/paperPlane.png",
-    eBouncingArrow: "assets/arrows/arrows_e.png",
+    eBouncingArrow: "assets/armIcons/bouncingArrowIcon.png",
     eDestroyer: "assets/armIcons/hammerIcon.png",
     ePuncturingArrow: "assets/armIcons/waterArrowIcon.png",
     eShockWave: "assets/armIcons/shockWaveIcon.png",
     eScreamingChickenArrow: "assets/armIcons/screamingChickenArrowIcon.png",
-    eMineLauncher: "assets/armIcons/mineLauncherIcon.png"
+    eMineLauncher: "assets/armIcons/mineLauncherIcon.png",
+    ePoisonArrow: "assets/armIcons/poisonArrowIcon.png",
+    eRegenerationArrow: "assets/armIcons/regenerationArrowIcon.png"
 });
 
 function Arm(XPos, YPos, order, currentNum, texture) {
@@ -49,8 +55,7 @@ function Arm(XPos, YPos, order, currentNum, texture) {
 }
 
 Arm.prototype.draw = function (aCamera) {
-    "assets/arrows/arrows_f.png",
-        this.mIcon.draw(aCamera);
+    this.mIcon.draw(aCamera);
     if (this.isActive)
         this.mMessageBox.draw(aCamera);
 };
@@ -88,4 +93,30 @@ Arm.prototype.setActive = function () {
 Arm.prototype.setInactive = function () {
     this.isActive = 0;
     this.mMessageBox = null;
+};
+
+Arm.loadAssets = function () {
+    gEngine.Textures.loadTexture(Arm.eIconAssets.eNormalArrow);
+    gEngine.Textures.loadTexture(Arm.eIconAssets.ePaperPlane);
+    gEngine.Textures.loadTexture(Arm.eIconAssets.eBouncingArrow);
+    gEngine.Textures.loadTexture(Arm.eIconAssets.eDestroyer);
+    gEngine.Textures.loadTexture(Arm.eIconAssets.ePuncturingArrow);
+    gEngine.Textures.loadTexture(Arm.eIconAssets.eShockWave);
+    gEngine.Textures.loadTexture(Arm.eIconAssets.eScreamingChickenArrow);
+    gEngine.Textures.loadTexture(Arm.eIconAssets.eMineLauncher);
+    gEngine.Textures.loadTexture(Arm.eIconAssets.ePoisonArrow);
+    gEngine.Textures.loadTexture(Arm.eIconAssets.eRegenerationArrow);
+};
+
+Arm.unloadAssets = function () {
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.eNormalArrow);
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.ePaperPlane);
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.eBouncingArrow);
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.eDestroyer);
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.ePuncturingArrow);
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.eShockWave);
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.eScreamingChickenArrow);
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.eMineLauncher);
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.ePoisonArrow);
+    gEngine.Textures.unloadTexture(Arm.eIconAssets.eRegenerationArrow);
 };

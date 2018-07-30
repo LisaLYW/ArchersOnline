@@ -19,8 +19,8 @@ Player.ePlayerState = Object.freeze({
 
 Player.eAttributes = Object.freeze({
     eOrginPos: [
-        [-20, -70],
-        [40, -70]
+        [-180, 100],
+        [180, 100]
     ],
     eArmoryPos: [
         [-1000, 0],
@@ -164,7 +164,7 @@ Player.prototype.initialize = function () {
         Player.eAttributes.eOrginPos[this.mIndex][1],
         12, 14,
         this.mAllObjs, this.mAllObstacles, this.mDestroyable,
-        this
+        this, this.mIndex
     );
     this.mShootController = new ShootController(
         Player.eAttributes.eOrginPos[this.mIndex][0],
@@ -274,16 +274,84 @@ Player.prototype.keyControl = function () {
                     this.mCurrentState = Player.ePlayerState.eShoot;
             }
 
-            this.moveCamera();
+            this.cameraKeyControl();
             this.mShootController.keyControl();
             this.mArmory.keyControl();
             this.mArcher.keyControl();
 
+            if (gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left)) {
+                if (this.mMainCamera.isMouseInViewport()) {
+                    var msPosX = this.mMainCamera.mouseWCX();
+                    var msPosY = this.mMainCamera.mouseWCY();
+                    var archX = this.mArcher.getXform().getXPos();
+                    var archY = this.mArcher.getXform().getYPos();
+                    var distance = this.calculateDistance(msPosX, msPosY, archX, archY);
+                    var sin = (msPosY - archY) / distance;
+                    var rad = Math.asin(sin);
+                    if (this.mArcher.getCurrentState() === Archer.eArcherState.eStandLeft
+                        || this.mArcher.getCurrentState() === Archer.eArcherState.eWalkLeft) {
+                        if (msPosX <= archX)
+                            this.mShootController.setRotationInRad(Math.PI - rad);
+                        else {
+                            if (this.mArcher.getCurrentState() === Archer.eArcherState.eStandLeft) {
+                                this.mArcher.setCurrentState(Archer.eArcherState.eStandRight);
+                                this.mArcher.setCurrentFrontDir(Archer.eDirection.eRight);
+                                this.mShootController.setRotationInRad(Math.PI - rad);
+                            }
+                        }
+                    }
+                    else if (this.mArcher.getCurrentState() === Archer.eArcherState.eStandRight
+                        || this.mArcher.getCurrentState() === Archer.eArcherState.eWalkRight) {
+                        if (msPosX >= archX)
+                            this.mShootController.setRotationInRad(rad);
+                        else {
+                            if (this.mArcher.getCurrentState() === Archer.eArcherState.eStandRight) {
+                                this.mArcher.setCurrentState(Archer.eArcherState.eStandLeft);
+                                this.mArcher.setCurrentFrontDir(Archer.eDirection.eLeft);
+                                this.mShootController.setRotationInRad(Math.PI - rad);
+                            }
+                        }
+                    }
+                }
+
+                // Armory mouse choose
+                if (this.mArmoryCamera.isMouseInViewport()) {
+                    var i;
+                    var msPosX = this.mArmoryCamera.mouseWCX() + 1000;
+                    var msPosY = this.mArmoryCamera.mouseWCY();
+                    if (this.mIndex === 1)
+                        msPosY -= 200;
+                    for (i = 0; i < 34; ++i) {
+                        if (Math.abs(msPosX - Armory.eCellOffsets[i][0]) <= 5
+                            && Math.abs(msPosY - Armory.eCellOffsets[i][1]) <= 5) {
+                            this.mArmory.setCurrentArm(i);
+                            break;
+                        }
+                    }
+                }
+
+                // Minimap mouse choose
+                if (this.mMinimapCamera.isMouseInViewport()) {
+                    var i;
+                    var msPosX = this.mMinimapCamera.mouseWCX();
+                    var msPosY = this.mMinimapCamera.mouseWCY();
+                    this.moveCameraTo(msPosX, msPosY);
+                }
+            }
+
+            /*
             if (
                 gEngine.Input.isKeyPressed(gEngine.Input.keys.A) ||
                 gEngine.Input.isKeyPressed(gEngine.Input.keys.D) ||
                 gEngine.Input.isKeyPressed(gEngine.Input.keys.Space)
             ) {
+                this.resetCamera();
+            }
+            */
+
+            var v = this.mArcher.getRigidBody().getVelocity();
+            if (Math.abs(v[0]) >= 1.0 ||
+                Math.abs(v[1]) >= 1.0) {
                 this.resetCamera();
             }
 
@@ -292,6 +360,14 @@ Player.prototype.keyControl = function () {
         case Player.ePlayerState.eShoot: {
             if (this.mArrow.getCurrentState() === Arrow.eArrowState.eFlying)
                 this.traceArrow();
+            else if (this.mArrow.getCurrentState() === Arrow.eHit) {
+                var v = this.mArcher.getRigidBody().getVelocity();
+                if (Math.abs(v[0]) >= 1.0 ||
+                    Math.abs(v[1]) >= 1.0) {
+                    this.resetCamera();
+                }
+            }
+
             break;
         }
         case Player.ePlayerState.eWait: {
@@ -333,44 +409,27 @@ Player.prototype.draw = function () {
         for (i = 0; i < spaceLimitSet.length; i++)
             spaceLimitSet[i].draw(camera);
 
-        // for puncturing arrow
-        if (this.mArrow && this.mArrow instanceof PuncturingArrow) {
+        if (this.mArrow && this.mArrow.getCurrentState() === Arrow.eArrowState.eHit)
             this.mArrow.draw(camera);
-        }
-        // for screaming chicken arrow
-        if (this.mArrow && this.mArrow instanceof ScreamingChickenArrow && this.mArrow.isChicken()) {
+        if (this.mArrow && this.mArrow instanceof PuncturingArrow)
             this.mArrow.draw(camera);
-        }
 
-        /*
-        var spaceLimit = this.mGame.getSpaceLimit();
-        var spaceLimitRenderable = new Renderable();
-        spaceLimitRenderable.setColor([1, 0, 0, 0]);
-        spaceLimitRenderable.getXform().setPosition(
-            (spaceLimit.rightLimit + spaceLimit.leftLimit) / 2,
-            (spaceLimit.upLimit + spaceLimit.rightLimit) / 2
-        );
-        spaceLimitRenderable.getXform().setSize(
-            spaceLimit.rightLimit - spaceLimit.leftLimit,
-            spaceLimit.upLimit - spaceLimit.rightLimit
-        );
-        spaceLimitRenderable.draw(camera);
-        */
+        // draw buff for self
+        for (i = 0; i < this.mBuffSet.length; i++)
+            this.mBuffSet[i].draw(camera);
+
+        // draw buff for opponent
+        var opponent;
+        if (this.mIndex === 0)
+            opponent = this.mGame.mPlayers[1];
+        else if (this.mIndex === 1)
+            opponent = this.mGame.mPlayers[0];
+        for (i = 0; i < opponent.mBuffSet.length; i++)
+            opponent.mBuffSet[i].draw(camera);
 
         this.mAllObjs.draw(camera);
         this.mMark.draw(camera);
         this.mShootController.draw(camera);
-
-        /*
-        if (this.mArrow instanceof ScreamingChickenArrow &&
-            this.mArrow.isChicken()) {
-            console.log(
-                this.mArrow.getScreamingChicken().getXform().getXPos(),
-                this.mArrow.getScreamingChicken().getXform().getYPos()
-            );
-            this.mArrow.getScreamingChicken().draw(camera);
-        }
-        */
 
         camera = this.mArmoryCamera;
         camera.setupViewProjection();
@@ -392,7 +451,6 @@ Player.prototype.draw = function () {
         this.mSelfMark.setColor([0, 1, 0, 0.5]);
         this.mSelfMark.draw(camera);
 
-        var opponent;
         if (this.mIndex === 0)
             opponent = this.mGame.getPlayerAt(1);
         else if (this.mIndex === 1)
@@ -519,6 +577,22 @@ Player.prototype.shoot = function () {
             );
             break;
         }
+        case 8: {
+            this.mArrow = new PoisonArrow(
+                pos[0] + offset[0] * 10, pos[1] + offset[1] * 10,
+                velocity[0], velocity[1],
+                this.mAllObjs, this.mObstacle, this.mDestroyable, this
+            );
+            break;
+        }
+        case 9: {
+            this.mArrow = new RegenerationArrow(
+                pos[0] + offset[0] * 10, pos[1] + offset[1] * 10,
+                velocity[0], velocity[1],
+                this.mAllObjs, this.mObstacle, this.mDestroyable, this
+            );
+            break;
+        }
         default:{
             this.mArrow = new Arrow(
                 pos[0] + offset[0] * 10, pos[1] + offset[1] * 10,
@@ -541,7 +615,7 @@ Player.prototype.shoot = function () {
     }
 };
 
-Player.prototype.moveCamera = function () {
+Player.prototype.cameraKeyControl = function () {
     var mainCameraWCCenter = this.mMainCamera.getWCCenter();
     var newMainCameraWCCenterX = mainCameraWCCenter[0];
     var newMainCameraWCCenterY = mainCameraWCCenter[1];
@@ -557,7 +631,7 @@ Player.prototype.moveCamera = function () {
     else if (gEngine.Input.isKeyPressed(gEngine.Input.keys.Right)) {
         newMainCameraWCCenterX += 20;
     }
-    else if (gEngine.Input.isKeyPressed(gEngine.Input.keys.H)) {
+    else if (gEngine.Input.isKeyPressed(gEngine.Input.keys.F)) {
         this.resetCamera();
         return;
     }
@@ -585,8 +659,24 @@ Player.prototype.resetCamera = function () {
     if (cameraCenterY < -65)
         cameraCenterY = -65;
     var i;
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < 5; i++) {
         this.mMainCamera.setWCCenter(cameraCenterX, cameraCenterY);
+        this.mMainCamera.update();
+    }
+};
+
+Player.prototype.moveCameraTo = function (xpos, ypos) {
+    if (xpos > 160)
+        xpos = 160;
+    if (xpos < -160)
+        xpos = -160;
+    if (ypos > 65)
+        ypos = 65;
+    if (ypos < -65)
+        ypos = -65;
+    var i;
+    for (i = 0; i < 20; i++) {
+        this.mMainCamera.setWCCenter(xpos, ypos);
         this.mMainCamera.update();
     }
 };
@@ -636,5 +726,21 @@ Player.prototype.incTurns = function () {
 Player.prototype.addBuff = function (buff) {
     buff.initialize(this, this.mTurns, 5);
     this.mBuffSet.push(buff);
-    console.log(this.mBuffSet);
+};
+
+Player.prototype.calculateDistance = function (posX, posY, aX, aY) {
+    return Math.sqrt(Math.pow(aX - posX, 2)
+        + Math.pow(aY - posY, 2));
+};
+
+Player.loadAssets = function () {
+    gEngine.Textures.loadTexture(Player.eAssets.eViewFrameTexture);
+
+    gEngine.AudioClips.loadAudio(Player.eAudio.eShootCue);
+};
+
+Player.unloadAssets = function () {
+    gEngine.Textures.unloadTexture(Player.eAssets.eViewFrameTexture);
+
+    gEngine.AudioClips.unloadAudio(Player.eAudio.eShootCue);
 };
