@@ -32,7 +32,7 @@ Game.prototype.setCurrentPlayer = function (index) {
     this.mPlayers[0].incTurns();
     this.mPlayers[1].incTurns();
     if (this.mTurns % 2 === 0) {
-        this.decreaseSpaceLimit(5);
+        this.decreaseSpaceLimit(10);
     }
     this.mCurrentPlayer = this.mPlayers[index];
     this.mCurrentPlayer.setState(Player.ePlayerState.eReady);
@@ -42,7 +42,6 @@ Game.prototype.setCurrentPlayer = function (index) {
 
     var i;
     if (index === 0) {
-        console.log(this.mCurrentScene.mAllObjs);
         this.mPlayers[1].setState(Player.ePlayerState.eWait);
         this.mCurrentState = Game.eGameState.ePlayer1_Turn;
     }

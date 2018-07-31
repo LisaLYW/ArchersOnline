@@ -24,9 +24,11 @@ IJKL or Mouse Click to choose the arm in the armory
 
 Arrow Keys to control the main camera move
 
-H (Press) to make the main camera return to the archer
+F (Press) to make the main camera return to the archer
 
 Mouse Click on mini map to control the camera move to specific position
+
+Mouse Click to choose menu item
 
 ## Arms ##
 
