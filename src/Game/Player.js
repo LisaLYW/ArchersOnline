@@ -64,6 +64,8 @@ function Player(game, index, aAllObjs, aAllObstacles, aDestroyable, aBackground)
 
     this.mBuffSet = null;
 
+    this.mActionEnergy = 5; // What will happen if we add this ?
+
     this.initialize();
 }
 
