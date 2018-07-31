@@ -1,13 +1,13 @@
 function PoisonArrow(
     posX, posY, vX, vY,
-    aAllObjs, aObstacle, aDestroyable,
+    aAllObjs, aObstacle, aDestroyable, aProps,
     master
 ) {
     Arrow.call(
         this,
         posX, posY, vX, vY,
         Arrow.eAssets.ePoisonArrowTexture,
-        aAllObjs, aObstacle, aDestroyable,
+        aAllObjs, aObstacle, aDestroyable, aProps,
         master
     );
 
@@ -81,11 +81,13 @@ PoisonArrow.prototype.effectOnDestroyable = function (obj) {
         this.mMaster.getArcher().addHp(obj.getRestore());
         this.mAllObjs.removeFromSet(obj);
         this.mDestroyable.removeFromSet(obj);
+        this.mProps.removeFromSet(obj);
     }
     else if (obj instanceof Bow) {
         this.mMaster.getMoreArm(obj.getArmNum(), obj.getArmAmount());
         this.mAllObjs.removeFromSet(obj);
         this.mDestroyable.removeFromSet(obj);
+        this.mProps.removeFromSet(obj);
     }
     else if (obj instanceof Mine) {
         obj.explode();

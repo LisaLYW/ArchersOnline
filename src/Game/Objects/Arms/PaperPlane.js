@@ -1,13 +1,13 @@
 function PaperPlane(
     posX, posY, vX, vY,
-    aAllObjs, aObstacle, aDestroyable,
+    aAllObjs, aObstacle, aDestroyable, aProps,
     master
 ) {
     Arrow.call(
         this,
         posX, posY, vX, vY,
         Arrow.eAssets.ePaperPlaneTexture,
-        aAllObjs, aObstacle, aDestroyable,
+        aAllObjs, aObstacle, aDestroyable, aProps,
         master
     );
 
@@ -67,7 +67,7 @@ PaperPlane.prototype.effectOnObstacle = function (obj) {
     this.transfer();
     this.mCurrentState = Arrow.eArrowState.eHit;
     this.mGenerateParticles = 0;
-    this.mMaster.setState(Player.ePlayerState.eReady);
+    //this.mMaster.setState(Player.ePlayerState.eReady);
 };
 
 PaperPlane.prototype.effectOnArcher = function (obj) {
@@ -75,6 +75,7 @@ PaperPlane.prototype.effectOnArcher = function (obj) {
     this.transfer();
     this.mCurrentState = Arrow.eArrowState.eHit;
     this.mGenerateParticles = 0;
+    //this.mMaster.setState(Player.ePlayerState.eReady);
 };
 
 PaperPlane.prototype.effectOnDestroyable = function (obj) {
@@ -82,6 +83,8 @@ PaperPlane.prototype.effectOnDestroyable = function (obj) {
     this.transfer();
     this.mCurrentState = Arrow.eArrowState.eHit;
     this.mGenerateParticles = 0;
+    this.mProps.removeFromSet(obj);
+    //this.mMaster.setState(Player.ePlayerState.eReady);
 };
 
 
