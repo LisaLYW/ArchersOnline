@@ -67,6 +67,7 @@ PaperPlane.prototype.effectOnObstacle = function (obj) {
     this.transfer();
     this.mCurrentState = Arrow.eArrowState.eHit;
     this.mGenerateParticles = 0;
+    this.mMaster.setState(Player.ePlayerState.eReady);
 };
 
 PaperPlane.prototype.effectOnArcher = function (obj) {
