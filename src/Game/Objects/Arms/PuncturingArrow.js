@@ -19,6 +19,8 @@ function PuncturingArrow(
     this.mHitSet = new GameObjectSet();
     this.mDamage = 4;
 
+    this.mSoundTimer = 0;
+
     //particles
     this.mGenerateParticles = 1;
     this.mParticles = new ParticleGameObjectSet();
@@ -29,6 +31,12 @@ gEngine.Core.inheritPrototype(PuncturingArrow, Arrow);
 
 PuncturingArrow.prototype.update = function () {
     Arrow.prototype.update.call(this);
+
+    this.mSoundTimer++;
+    if (this.mSoundTimer > 30) {
+        //gEngine.AudioClips.playACue(Arrow.eAudio.ePuncturing);
+        this.mSoundTimer = 0;
+    }
 
     this.getRigidBody().setVelocity(this.mVx, this.mVy);
 
@@ -72,6 +80,8 @@ PuncturingArrow.prototype.createParticle = function (atX, atY) {
 };
 
 PuncturingArrow.prototype.effectOnObstacle = function (obj) {
+    gEngine.AudioClips.playACue(Arrow.eAudio.ePuncturing);
+
     if (!this.mHitSet.hasObject(obj)) {
         this.mHitSet.addToSet(obj);
         if (this.mDamage >= 2)
@@ -80,6 +90,8 @@ PuncturingArrow.prototype.effectOnObstacle = function (obj) {
 };
 
 PuncturingArrow.prototype.effectOnArcher = function (obj) {
+    gEngine.AudioClips.playACue(Arrow.eAudio.ePuncturing);
+
     if (obj === this.mMaster) {
         this.mMaster.loseHp(1);
     }
@@ -90,6 +102,8 @@ PuncturingArrow.prototype.effectOnArcher = function (obj) {
 };
 
 PuncturingArrow.prototype.effectOnDestroyable = function (obj) {
+    gEngine.AudioClips.playACue(Arrow.eAudio.ePuncturing);
+
     if (obj instanceof LifePotion) {
         this.mMaster.getArcher().addHp(obj.getRestore());
         this.mAllObjs.removeFromSet(obj);
@@ -106,7 +120,7 @@ PuncturingArrow.prototype.effectOnDestroyable = function (obj) {
 
     if (!this.mHitSet.hasObject(obj)) {
         this.mHitSet.addToSet(obj);
-        if (this.mDamage >= 2)
+        if (this.mDamage >= 3)
             this.mDamage--;
     }
 };

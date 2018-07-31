@@ -22,6 +22,9 @@ function Game() {
     this.mSpaceLimit = null;
     this.mTurns = null;
 
+    // ugly code here
+    Timer.loadAssets();
+
     this.mCurrentState = Game.eGameState.eGameStart;
     this.mCurrentScene = new MyMenu(this);
     gEngine.Core.initializeEngineCore('GLCanvas', this.mCurrentScene);
@@ -32,7 +35,7 @@ Game.prototype.setCurrentPlayer = function (index) {
     this.mPlayers[0].incTurns();
     this.mPlayers[1].incTurns();
     if (this.mTurns % 2 === 0) {
-        this.decreaseSpaceLimit(10);
+        this.decreaseSpaceLimit(15);
     }
     this.mCurrentPlayer = this.mPlayers[index];
     this.mCurrentPlayer.setState(Player.ePlayerState.eReady);
@@ -222,6 +225,6 @@ Game.prototype.decreaseSpaceLimit = function (delta) {
 };
 
 Game.random = function (min, max) {
-    parseInt(Math.random() * (max - min + 1) + min, 10);
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    parseInt(Math.random() * (max - min) + min, 10);
+    return Math.floor(Math.random() * (max - min) + min);
 };

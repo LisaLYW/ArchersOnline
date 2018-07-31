@@ -7,7 +7,8 @@ function GameOver2(game) {
     this.kQuit = "assets/gameover/quit.png";
     this.kBackground = "assets/menu/MenuBackground.png";
     this.kP2Win = "assets/gameover/P2Win.png";
-
+    this.kBgm = "assets/sounds/bgm_win_2.mp3";
+    this.mBgmPlayCount = 0;
 
     this.mAllObject = null;
     this.mGameOverTitle = null;
@@ -35,6 +36,8 @@ GameOver2.prototype.loadScene = function () {
     gEngine.Textures.loadTexture(this.kBackground);
     gEngine.Textures.loadTexture(this.kQuit);
     gEngine.Textures.loadTexture(this.kP2Win);
+
+    gEngine.AudioClips.loadAudio(this.kBgm);
 };
 
 
@@ -45,20 +48,23 @@ GameOver2.prototype.unloadScene = function () {
     gEngine.Textures.unloadTexture(this.kBackground);
     gEngine.Textures.unloadTexture(this.kP2Win);
 
+    gEngine.AudioClips.unloadAudio(this.kBgm);
+    gEngine.AudioClips.stopBackgroundAudio();
+
     if (this.mOption === 0) {
-        var skyRandom = Math.floor(Game.random(0, 1.8));
-        var placeRandom = Math.floor(Game.random(0, 2.8));
+        var skyRandom = Game.random(0, 2.99);
+        var placeRandom = Game.random(0, 2.99);
+        var bgmRandom = Game.random(0, 5.99);
 
-        console.log(placeRandom);
-
-        var nextLevel = new SceneA(this.mGame, placeRandom, skyRandom);
+        var nextLevel = new SceneA(this.mGame, placeRandom, skyRandom, bgmRandom);
         gEngine.Core.startScene(nextLevel);
         this.mGame.mCurrentScene = nextLevel;
     }
-    else
+    else {
         this.mNext = new MyMenu(this.mGame);
-    gEngine.Core.startScene(this.mNext);
-    this.mGame.mCurrentScene = this.mNext;
+        gEngine.Core.startScene(this.mNext);
+        this.mGame.mCurrentScene = this.mNext;
+    }
 };
 
 GameOver2.prototype.initialize = function () {
@@ -98,6 +104,11 @@ GameOver2.prototype.initialize = function () {
 };
 
 GameOver2.prototype.update = function () {
+    if (this.mBgmPlayCount <= 0) {
+        gEngine.AudioClips.playACue(this.kBgm);
+        this.mBgmPlayCount++;
+    }
+
     this.mAllObject.update();
     
     if (this.mCamera.isMouseInViewport()) {
@@ -108,10 +119,10 @@ GameOver2.prototype.update = function () {
         }
     }
     
-    if (this.mOption == 0 && gEngine.Input.isKeyClicked(gEngine.Input.keys.S)) {
+    if (this.mOption === 0 && gEngine.Input.isKeyClicked(gEngine.Input.keys.S)) {
         this.mOption = 1;
     }
-    if (this.mOption == 1 && gEngine.Input.isKeyClicked(gEngine.Input.keys.W)) {
+    if (this.mOption === 1 && gEngine.Input.isKeyClicked(gEngine.Input.keys.W)) {
         this.mOption = 0;
     }
     
