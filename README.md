@@ -26,6 +26,12 @@ Arrow Keys to control the main camera move
 
 F (Press) to make the main camera return to the archer
 
+V (Click) to stop or play background music in game (only in fight scene)
+
+B (Click) to change the current background music in game (only in fight scene)
+
+N/M (Click) to end the current fighting (player 1 win / player 2 win), you can use these to quickly restart
+
 Mouse Click on mini map to control the camera move to specific position
 
 Mouse Click to choose menu item
