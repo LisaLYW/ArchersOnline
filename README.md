@@ -1,6 +1,6 @@
 # Archers Online
 
-![](C:\Users\Admin\Desktop\ArchersOnline\img\archersLogo.png)
+![](https://raw.githubusercontent.com/LisaLYW/ArchersOnline/master/img/archersLogo.png)
 
 ## Rule ##
 
@@ -67,9 +67,9 @@ LI YONGHAN, 李泳翰, iqqq0531@qq.com
 
 ## Game Screenshot ##
 
-![](C:\Users\Admin\Desktop\ArchersOnline\img\newIndex.png)
+![](https://raw.githubusercontent.com/LisaLYW/ArchersOnline/master/img/newIndex.png)
 
-![](C:\Users\Admin\Desktop\ArchersOnline\img\Mine.png)
+![](https://raw.githubusercontent.com/LisaLYW/ArchersOnline/master/img/Mine.png)
 
-![](C:\Users\Admin\Desktop\ArchersOnline\img\final.png)
+![](https://raw.githubusercontent.com/LisaLYW/ArchersOnline/master/img/final.png)
 
