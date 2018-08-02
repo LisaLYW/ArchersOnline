@@ -1,5 +1,7 @@
 # Archers Online
 
+![](C:\Users\Admin\Desktop\ArchersOnline\img\archersLogo.png)
+
 ## Rule ##
 
 In the game, two player control an Archer respectively. The Archer survives in the end will be the winner.
@@ -62,3 +64,12 @@ LIU YUWEN, 柳裕文, lyw.765486562@outlook.com
 XU JIAXI, 徐嘉希, xujiaxi19980728@qq.com 
 
 LI YONGHAN, 李泳翰, iqqq0531@qq.com 
+
+## Game Screenshot ##
+
+![](C:\Users\Admin\Desktop\ArchersOnline\img\newIndex.png)
+
+![](C:\Users\Admin\Desktop\ArchersOnline\img\Mine.png)
+
+![](C:\Users\Admin\Desktop\ArchersOnline\img\final.png)
+
