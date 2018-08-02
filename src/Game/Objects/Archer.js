@@ -69,7 +69,7 @@ function Archer(
     this.mWalkLeft.setSpriteSequence(128, 0, 80, 80, 7, 0);
     this.mWalkLeft.setAnimationType(SpriteAnimateRenderable.eAnimationType.eAnimateRight);
     this.mWalkLeft.setAnimationSpeed(10);
-    
+
     if(!this.mIndex)
         this.mShootLeft = new SpriteAnimateRenderable(Archer.eAssets_1.eShootLeftTexture);
     else
@@ -90,7 +90,7 @@ function Archer(
     this.mStandRight.getXform().setPosition(atX, atY);
     this.mStandRight.getXform().setSize(atW, atH);
     this.mStandRight.setElementPixelPositions(48, 128, 48, 128);
-    
+
     if(!this.mIndex)
         this.mWalkRight = new SpriteAnimateRenderable(Archer.eAssets_1.eWalkRightTexture);
     else
@@ -117,7 +117,7 @@ function Archer(
 
     this.eCurrentState = Archer.eArcherState.eStandRight;
     this.setCurrentFrontDir(Archer.eDirection.eRight);
-    
+
     //Physics
     var r;
     r = new RigidRectangle(this.getXform(), atW - 6, atH - 4);
@@ -378,7 +378,10 @@ Archer.prototype.loseHp = function (delta) {
 Archer.prototype.jump = function () {
     if (this.mJumpRemain > 0) {
         var velocity = this.getRigidBody().getVelocity();
-        this.getRigidBody().setVelocity(velocity[0], 40);
+        if (velocity[1] > 0)
+            this.getRigidBody().setVelocity(velocity[0], velocity[1] * 0.5 + 40);
+        else
+            this.getRigidBody().setVelocity(velocity[0], 40);
         this.mJumpRemain--;
     }
 };

@@ -63,18 +63,9 @@ ShockWave.prototype.createParticle = function (atX, atY) {
 
 ShockWave.prototype.effectOnObstacle = function (obj) {
     this.mAllObjs.removeFromSet(this);
-    var i;
-    for (i = 0; i < this.mObstacle.size(); i++) {
-        obj = this.mObstacle.getObjectAt(i);
-        if (obj instanceof Archer) {
-            var distance = this.calculateDistance(obj.getXform().getXPos(), obj.getXform().getYPos());
-            if (distance <= 60) {
-                var vx = 5 + (80 - distance) * (obj.getXform().getXPos() - this.getXform().getXPos()) / distance;
-                var vy = 15 + (80 - distance) * (obj.getXform().getYPos() - this.getXform().getYPos()) / distance;
-                obj.getRigidBody().setVelocity(vx, vy);
-            }
-        }
-    }
+
+    this.shock();
+
     this.mGenerateParticles = 0;
     this.mCurrentState = Arrow.eArrowState.eHit;
 };
@@ -82,10 +73,9 @@ ShockWave.prototype.effectOnObstacle = function (obj) {
 ShockWave.prototype.effectOnArcher = function (obj) {
     this.mAllObjs.removeFromSet(this);
     obj.loseHp(2);
-    if (this.getXform().getXPos() < obj.getXform().getXPos())
-        obj.getRigidBody().setVelocity(40, 60);
-    else
-        obj.getRigidBody().setVelocity(-40, 60);
+
+    this.shock();
+
     this.mGenerateParticles = 0;
     this.mCurrentState = Arrow.eArrowState.eHit;
 };
@@ -93,10 +83,7 @@ ShockWave.prototype.effectOnArcher = function (obj) {
 ShockWave.prototype.effectOnDestroyable = function (obj) {
     this.mAllObjs.removeFromSet(this);
 
-    if (this.getXform().getXPos() < obj.getXform().getXPos())
-        obj.getRigidBody().setVelocity(40, 60);
-    else
-        obj.getRigidBody().setVelocity(-40, 60);
+    this.shock();
 
     if (obj instanceof LifePotion) {
         this.mMaster.getArcher().addHp(obj.getRestore());
@@ -124,4 +111,43 @@ ShockWave.prototype.calculateDistance = function (posX, posY) {
         Math.pow(this.getXform().getXPos() - posX, 2) +
         Math.pow(this.getXform().getYPos() - posY, 2)
     );
+};
+
+ShockWave.prototype.shock = function () {
+    var thisV = this.getRigidBody().getVelocity();
+    var thisSpeed = Math.sqrt(thisV[0] * thisV[0], thisV[1] * thisV[1]);
+
+    var pos = this.getXform().getPosition();
+
+    var i;
+    var obj;
+    var objPos;
+    var distance;
+    for (i = 0; i < this.mAllObjs.size(); i++) {
+        obj = this.mAllObjs.getObjectAt(i);
+        objPos = obj.getRenderable().getXform().getPosition();
+        distance = this.calculateDistance(objPos[0], objPos[1]);
+        var speed;
+        var velocity;
+
+        if (distance <= 80) {
+            speed = (80 - distance) * Math.sqrt(thisSpeed) * 0.20;
+            velocity = vec2.fromValues(
+                speed * (objPos[0] - pos[0]) / distance,
+                speed * (objPos[1] - pos[1]) / distance
+            );
+            if (obj instanceof Archer) {
+                obj.getRigidBody().setVelocity(velocity[0], velocity[1]);
+            }
+            else if (obj instanceof Bow) {
+                obj.getRigidBody().setVelocity(velocity[0], velocity[1]);
+            }
+            else if (obj instanceof LifePotion) {
+                obj.getRigidBody().setVelocity(velocity[0], velocity[1]);
+            }
+            else if (obj instanceof Mine) {
+                obj.getRigidBody().setVelocity(velocity[0], velocity[1]);
+            }
+        }
+    }
 };
